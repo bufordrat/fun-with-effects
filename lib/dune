@@ -1,0 +1,11 @@
+(library
+ (name lib)
+ (libraries prelude etude))
+
+(env
+ (dev
+  (flags (:standard -warn-error -A))))
+
+; Local Variables:
+; mode: dune
+; End:
