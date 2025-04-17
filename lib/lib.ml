@@ -7,6 +7,7 @@ module Xchg = struct
   (* external perform : 'a t -> 'a = "%perform" *)
 
   (* unit -> int *)
+  (* Exception: Stdlib.Effect.Unhandled(Lib.Xchg.Xchg(1)) *)
   let comp' () = perform (Xchg 0) + perform (Xchg 1)
 end
 
@@ -21,7 +22,7 @@ module WhyNotJustDoThis = struct
   (* unit -> int *)
   let comp' () = handle (Xchg 0) + handle (Xchg 1)
 
-  (* answer: you don't get the k *)
+  (* the answer seems to be that you don't get the k *)
 end
 
 module Simple = struct
@@ -34,6 +35,7 @@ module Simple = struct
     | effect (Xchg n), k -> continue k (n + 1)
 
   (* unit -> int *)
+  (* Exception: Stdlib.Effect.Continuation_already_resumed. *)
   let double_k_comp () =
     try comp' () with
     | effect (Xchg n), k -> continue k (n + 1) + continue k (n - 1)
@@ -52,5 +54,4 @@ module MessagePassing = struct
     | Complete of 'a
     | Suspended of { msg : int
                    ; cont : (int, 'a status) continuation }
-
 end
