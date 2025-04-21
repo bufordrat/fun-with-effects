@@ -48,10 +48,37 @@ end
 
 module MessagePassing = struct
   include Xchg
+  open Effect
   open Effect.Deep
 
   type 'a status =
     | Complete of 'a
-    | Suspended of { msg : int
-                   ; cont : (int, 'a status) continuation }
+    | Suspended of { msg : int ;
+                     cont : (int, 'a status) continuation }
+
+  let step (f : unit -> 'a) () : 'a status =
+    match f () with
+    | v -> Complete v
+    | effect (Xchg msg), cont -> Suspended { msg ; cont }
+
+  let rec run_both a b =
+    match a (), b() with
+    | Complete va, Complete vb -> (va, vb)
+    | Suspended { msg = m1 ;
+                  cont = k1 ; },
+      Suspended { msg = m2 ;
+                  cont = k2 } ->
+       run_both
+         (fun () -> continue k1 m2)
+         (fun () -> continue k2 m1)
+    | _ -> failwith "Improper synchronization"
+
+  let comp1 () = perform (Xchg 0) + perform (Xchg 1)
+  let comp2 () = perform (Xchg 21) * perform (Xchg 21)
+end
+
+module Example = struct
+  open Effect
+  type _ Effect.t += Wzap : int -> int t
+  
 end
