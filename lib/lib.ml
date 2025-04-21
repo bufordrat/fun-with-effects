@@ -59,10 +59,12 @@ module MessagePassing = struct
   let step (f : unit -> 'a) () : 'a status =
     match f () with
     | v -> Complete v
-    | effect (Xchg msg), cont -> Suspended { msg ; cont }
+    | effect (Xchg msg), cont ->
+       print_endline (string_of_int msg) ;
+       Suspended { msg ; cont }
 
   let rec run_both a b =
-    match a (), b() with
+    match a (), b () with
     | Complete va, Complete vb -> (va, vb)
     | Suspended { msg = m1 ;
                   cont = k1 ; },
@@ -75,6 +77,34 @@ module MessagePassing = struct
 
   let comp1 () = perform (Xchg 0) + perform (Xchg 1)
   let comp2 () = perform (Xchg 21) * perform (Xchg 21)
+
+  let comp3 () =
+    let one = perform (Xchg 0) in
+    let two = perform (Xchg 1) in
+    one + two
+
+  let comp4 () =
+    let one = perform (Xchg 21) in
+    let two = perform (Xchg 21) in
+    one * two
+
+  let rec run_both' a b =
+    match a (), b () with
+    | Complete va, Complete vb ->
+       (* Printf.printf "complete 1! %s\ncomplete 2! %s\n" (string_of_int va) (string_of_int vb) ; *)
+       (va, vb)
+    | Suspended { msg = m1 ;
+                  cont = k1 ; },
+      Suspended { msg = m2 ;
+                  cont = k2 } ->
+       (* print_endline (string_of_int m1) ; *)
+       (* print_endline (string_of_int m2) ; *)
+       run_both'
+         (fun () -> continue k1 m2)
+         (fun () -> continue k2 m1)
+    | _ -> failwith "Improper synchronization"
+
+
 end
 
 module Example = struct
