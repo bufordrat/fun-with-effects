@@ -79,14 +79,14 @@ module MessagePassing = struct
   let comp2 () = perform (Xchg 21) * perform (Xchg 21)
 
   let comp3 () =
-    let one = perform (Xchg 0) in
-    let two = perform (Xchg 1) in
-    one + two
-
+    let zero = perform (Xchg 0) in
+    let one = perform (Xchg 1) in
+    zero + one
+  
   let comp4 () =
-    let one = perform (Xchg 21) in
-    let two = perform (Xchg 21) in
-    one * two
+    let twenty_one1 = perform (Xchg 21) in
+    let twenty_one2 = perform (Xchg 21) in
+    twenty_one1 * twenty_one2
 
   let rec run_both' a b =
     match a (), b () with
