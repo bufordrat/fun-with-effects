@@ -105,23 +105,24 @@ module MessagePassing = struct
     | _ -> failwith "Improper synchronization"
 end
 
-module Example = struct
+module Examples = struct
   open Effect
-  open Effect.Deep
   type _ Effect.t += Wzap : int -> int t
 
-  let left_wzap () = perform (Wzap 2) + 3
-  let right_wzap () = 3 + perform (Wzap 2)
+  (* let left_wzap () = perform (Wzap 2) + 3 *)
+  (* let right_wzap () = 3 + perform (Wzap 2) *)
 
-  let run effects () =
-    match effects () with
-    | effect (Wzap n), k -> continue k n
-    | other -> other
+  (* open Effect.Deep *)
+
+  (* let run computation () = *)
+  (*   match computation () with *)
+  (*   | effect (Wzap n), k -> continue k n *)
+  (*   | other -> other *)
   
-  let run' effects () =
-    match effects () with
-    | effect (Wzap n), _ -> n
-    | other -> other
+  (* let run' computation () = *)
+  (*   match computation () with *)
+  (*   | effect (Wzap n), _ -> n *)
+  (*   | other -> other *)
 end
 
 module Scheduler = struct
@@ -188,3 +189,6 @@ module Scheduler = struct
             Printf.printf "[t2] received %d\n" v ;) ;
       )
 end
+
+module Group = Group
+module Wzap = Wzap
