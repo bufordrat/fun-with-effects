@@ -1,9 +1,8 @@
-open Effect
-
-type _ Effect.t +=
-   | Swap : int -> int t
+type _ eff +=
+   | Swap : int -> int eff
 
 open Effect.Deep
+
 type 'a status =
   | Complete of 'a
   | Suspended of { number : int ;
@@ -25,6 +24,8 @@ let rec scheduler comp1 comp2 =
          (fun _ -> continue cont1 number2)
          (fun _ -> continue cont2 number1)
   | _ -> failwith "synchronization error"
+
+open Effect
 
 let comp1 () =
   perform (Swap 0) + perform (Swap 1)

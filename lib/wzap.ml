@@ -1,6 +1,6 @@
-open Effect
+type _ eff += Wzap : int -> int eff
 
-type _ Effect.t += Wzap : int -> int t
+open Effect
 
 let example1 () = perform (Wzap 1) + 2
 

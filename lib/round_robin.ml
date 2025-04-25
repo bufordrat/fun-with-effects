@@ -1,8 +1,8 @@
 open Effect
-type _ Effect.t +=
-   | Xchg : int -> int t
-   | Yield : unit t
-             | Fork : (unit -> unit) -> unit t
+type _ eff +=
+   | Xchg : int -> int eff
+   | Yield : unit eff
+   | Fork : (unit -> unit) -> unit eff
 
 let fork f = perform (Fork f)
 let yield () = perform Yield
