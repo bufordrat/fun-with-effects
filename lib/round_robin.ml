@@ -1,8 +1,9 @@
-open Effect
 type _ eff +=
    | Xchg : int -> int eff
    | Yield : unit eff
    | Fork : (unit -> unit) -> unit eff
+
+open Effect
 
 let fork f = perform (Fork f)
 let yield () = perform Yield
